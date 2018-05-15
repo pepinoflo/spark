@@ -300,20 +300,11 @@ case class ArrayContains(left: Expression, right: Expression)
        ['123', '123']
   """)
 case class ArrayRepeat(left: Expression, right: Expression)
-  extends BinaryExpression {
+  extends BinaryExpression with ExpectsInputTypes {
 
   override def dataType: ArrayType = ArrayType(left.dataType, left.nullable)
 
-  override def checkInputDataTypes(): TypeCheckResult = {
-    val expected = IntegerType
-    if (!expected.acceptsType(right.dataType)) {
-      val mismatch = s"argument 2 requires ${expected.simpleString} type, " +
-        s"however, '${right.sql}' is of ${right.dataType.simpleString} type."
-      TypeCheckResult.TypeCheckFailure(mismatch)
-    } else {
-      TypeCheckResult.TypeCheckSuccess
-    }
-  }
+  override def inputTypes: Seq[AbstractDataType] = Seq(AnyDataType, IntegerType)
 
   override def nullable: Boolean = right.nullable
 
